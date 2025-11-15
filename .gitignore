@@ -1,0 +1,6 @@
+*.o
+a.out
+task*
+*.swp
+*~
+.DS_Store
