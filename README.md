@@ -51,3 +51,59 @@ Decrypted M = 50617373776F72642069732064656573
 $ python3 -c 'print(bytes.fromhex("50617373776F72642069732064656573").decode("utf-8"))'
 Password is dees
 ```
+
+
+## Task 4: Signing a Message
+
+See source code in `task4.c`.
+
+```bash
+$ ./task4
+Original Message = 49206F776520796F75202432303030
+Modified Message = 49206F776520796F75202433303030
+Signature for original message: 80A55421D72345AC199836F60D51DC9594E2BDB4AE20C804823FB71660DE7B82
+Signature for modified message: 04FC9C53ED7BBE4ED4BE2C24B0BDF7184B96290B4ED4E3959F58E94B1ECEA2EB
+```
+
+Comparing the two signatures, we can tell that they are not similar to each other. We changed one digit of the message to make $2000 become $3000, but that resulted in a completely unrelated signature. 
+
+## Task 5: Verifying a Signature
+
+See source code in `task5.c`.
+
+```bash
+$ ./task5
+Original Message = 4C61756E63682061206D697373696C652E
+Output Message with good signature = 4C61756E63682061206D697373696C652E
+Valid Signature
+Output Message with corrupted signature = 91471927C80DF1E42C154FB4638CE8BC726D3D66C83A4EB6B7BE0203B41AC294
+Invalid Signiture
+```
+
+After changing the last byte of the signature from 2F to 3F, the resulting output message becomes something completely unrelated to the original message, causing it to fail signature verification.
+
+## Task 6: Manually Verifying an X.509 Certificate
+
+In my case I retreived the RSA certificates from www.reddit.com with this command. It came with 2 certificates, and I saved the first one to c0.pem and the second to c1.pem. 
+
+```bash
+$ openssl s_client -connect www.reddit.com:443 -showcerts
+```
+Next, I found the public key attributes n and e using this for n
+```bash
+$ openssl s_client -connect www.reddit.com:443 -showcerts
+```
+
+
+
+See source code in `task6.c`.
+
+```bash
+$ ./task6
+
+```
+
+
+## Task 7: Collaboration Statement
+Evan completed tasks 1, 2, and 3, Will completed tasks 4, 5, and 6.
+
