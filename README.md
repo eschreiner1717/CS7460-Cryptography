@@ -21,6 +21,9 @@ phi = (p-1)*(q-1) =  E103ABD94892E3E74AFD724BF28E78348D52298BD687C44DEB3A81065A7
 Private key d =      3587A24598E5F2A21DB007D89D18CC50ABA5075BA19A33890FE7C28A9B496AEB
 ```
 
+<img width="1117" height="86" alt="image" src="https://github.com/user-attachments/assets/b0198ddb-c1a8-4578-9482-9d4cbd7dc651" />
+
+
 ## Task 2: Encrypting a Message
 
 See source code in `task2.c`.
@@ -29,6 +32,8 @@ See source code in `task2.c`.
 $ ./task2
 Encrypted ciphertext C = 6FB078DA550B2650832661E14F4F8D2CFAEF475A0DF3A75CACDC5DE5CFC5FADC
 ```
+
+<img width="1164" height="60" alt="image" src="https://github.com/user-attachments/assets/027e5ee5-ea9e-47db-b8d0-b1944342ddcd" />
 
 Then veryifying via decyption with `task3.c` (:
 ```bash
@@ -39,11 +44,12 @@ $ python3 -c 'print(bytes.fromhex("4120746F702073656372657421").decode("utf-8"))
 A top secret!
 ```
 
+<img width="1186" height="133" alt="image" src="https://github.com/user-attachments/assets/e700700f-7b3d-40ec-a1d1-7afc6a6d597d" />
+
 
 ## Task 3: Decrypting a Message
 
 See source code in `task3.c`.
-
 
 ```bash
 $ ./task3
@@ -52,6 +58,8 @@ Decrypted M = 50617373776F72642069732064656573
 $ python3 -c 'print(bytes.fromhex("50617373776F72642069732064656573").decode("utf-8"))'
 Password is dees
 ```
+
+<img width="1188" height="133" alt="image" src="https://github.com/user-attachments/assets/905f6ddc-84c1-426a-a28b-68c9d155fa61" />
 
 
 ## Task 4: Signing a Message
