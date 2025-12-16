@@ -19,17 +19,13 @@ int main(int argc, const char *argv[]) {
 	c.h[1] = htole32(0x00000000);
 	// continue...
 
-	// TODO: Update the number of bits processed.
 	// Total length of the forged message = (Key + Message + Padding).
-
-	c.Nl = (64 + 13) * 8; // 64 bytes (original block) + 13 bytes ("Extra message") * 8 bits/byte
-    	c.Nh = 0; 
+	// 64 bytes (original block) + 13 bytes ("&download=secret.txt") * 8 bits/byte
+	c.Nl = (64 + 20) * 8;
+    	c.Nh = 0;
 
     	// Append the extra message
-    	// Note: This must match the command you add to the URL (e.g. &download=secret.txt)
-    	// The example uses "Extra message" (13 chars). 
-    	// TODO: CHANGE THIS to "&download=secret.txt" (20 chars) for the actual attack.
-    	SHA256_Update(&c, "Extra message", 13); 
+    	SHA256_Update(&c, "&download=secret.txt", 20);
 
     	SHA256_Final(buffer, &c);
 
