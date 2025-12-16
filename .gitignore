@@ -1,6 +1,0 @@
-*.o
-a.out
-*.swp
-*~
-.DS_Store
-task[1-7]
