@@ -110,8 +110,8 @@ URL contructed
 
 run in terminal
 ```bash
-    curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
- ```
+curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
+```
 
 expected result
 <img width="688" height="420" alt="image" src="https://github.com/user-attachments/assets/d9c84e1a-c3e6-4623-b92b-ff1c2b800d05" />
@@ -124,6 +124,7 @@ expected result
 1.  Open `lab.py` (the server code).
 2.  Replace the insecure SHA-256 concatenation with `hmac.new`.
 3.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works.
+
 
 
 
