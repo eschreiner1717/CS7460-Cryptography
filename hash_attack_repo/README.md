@@ -122,8 +122,53 @@ expected result
 
 ## Task 4 (Remediation)
 1.  Open `lab.py` (the server code).
+Go in the lab directory and edit the lab.py file from there
+For my file location on arm mac:
+```bash
+cd ~/Downloads/finalLab/Labsetup-arm/image_flask/app/www
+```
+   
 2.  Replace the insecure SHA-256 concatenation with `hmac.new`.
-3.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works.
+Replace verfy_mac function with this, with the changes being removed commented out, and the new addition following it.
+```
+def verify_mac(key, my_name, uid, cmd, download, mac):
+    download_message = '' if not download else '&download=' + download
+    message = ''
+    if my_name:
+        message = 'myname={}&'.format(my_name)
+    message += 'uid={}&lstcmd='.format(uid) + cmd + download_message
+    #payload = key + ':' + message
+    #app.logger.debug('payload is [{}]'.format(payload))
+    #real_mac = hashlib.sha256(payload.encode('utf-8', 'surrogateescape')).hexdigest()
+
+    app.logger.debug('message is [{}]'.format(message))
+
+    real_mac = hmac.new(
+        bytearray(key.encode('utf-8')),
+        msg=message.encode('utf-8', 'surrogateescape'),
+        digestmod=hashlib.sha256
+    ).hexdigest()
+
+    app.logger.debug('real mac is [{}]'.format(real_mac))
+    if mac == real_mac:
+        return True
+    return False
+```
+
+3.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works. If docker is running, do `dcdown` first to shut down the running server.
+
+URL contructed in Part 3
+    ```http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
+
+run in terminal
+```bash
+curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
+```
+
+expected result
+<img width="957" height="469" alt="image" src="https://github.com/user-attachments/assets/cfefafab-f349-4b7a-9b76-234523cf08a9" />
+
+
 
 
 
