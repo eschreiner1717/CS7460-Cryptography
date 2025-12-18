@@ -77,15 +77,9 @@ def verify_mac(key, my_name, uid, cmd, download, mac):
     if my_name:
         message = 'myname={}&'.format(my_name)
     message += 'uid={}&lstcmd='.format(uid) + cmd + download_message
-    # payload = key + ':' + message
-    # app.logger.debug('payload is [{}]'.format(payload))
-    # real_mac = hashlib.sha256(payload.encode('utf-8', 'surrogateescape')).hexdigest()
-    app.logger.debug('message is [{}]'.format(message))
-    real_mac = hmac.new(
-        bytearray(key.encode('utf-8')),
-        msg=message.encode('utf-8', 'surrogateescape'),
-        digestmod=hashlib.sha256
-    ).hexdigest()
+    payload = key + ':' + message
+    app.logger.debug('payload is [{}]'.format(payload))
+    real_mac = hashlib.sha256(payload.encode('utf-8', 'surrogateescape')).hexdigest()
 
     app.logger.debug('real mac is [{}]'.format(real_mac))
     if mac == real_mac:
