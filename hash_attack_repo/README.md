@@ -168,6 +168,61 @@ curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%
 expected result
 <img width="957" height="469" alt="image" src="https://github.com/user-attachments/assets/cfefafab-f349-4b7a-9b76-234523cf08a9" />
 
+4.  Repeat Task 1 to send a request to list files while using HMAC
+for the MAC calculation.
+
+Python function to compute HMAC
+```
+#!/bin/env python3
+import hmac
+import hashlib
+key='123456'
+message='myname=EvanSchreiner&uid=1001&lstcmd=1'
+mac = hmac.new(bytearray(key.encode('utf-8')),
+    msg=message.encode('utf-8', 'surrogateescape'),
+    digestmod=hashlib.sha256).hexdigest()
+print(mac)
+
+real_mac = hmac.new(bytearray(key.encode('utf-8')),
+    msg=message.encode('utf-8', 'surrogateescape'),
+    digestmod=hashlib.sha256).hexdigest()
+```
+
+create the file in the hash_attack_repo foler with `name hmac_mac.py`, then paste in python code above
+```bash
+nano hmac_mac.py
+```
+
+run python file
+```bash
+python 3 hmac_mac.py
+```
+
+result
+```
+694f119a8f200dfbe7a4f14750803081ee6a79f1d9be2a8e59f11a588cc98f25
+```
+Run Task 1 request to list files again with HMAC
+```bash
+curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=694f119a8f200dfbe7a4f14750803081ee6a79f1d9be2a8e59f11a588cc98f25"
+```
+
+expected result
+<img width="951" height="670" alt="image" src="https://github.com/user-attachments/assets/2d8d61df-5f2e-4c2f-ba91-f99dcdbbd08a" />
+
+
+
+Run attack with new HMAC in URL
+```bash
+curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=694f119a8f200dfbe7a4f14750803081ee6a79f1d9be2a8e59f11a588cc98f25"
+```
+
+expected result
+<img width="941" height="470" alt="image" src="https://github.com/user-attachments/assets/0c4a39eb-9deb-4665-b4f5-f14d7d89fa16" />
+
+Explaination of why a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC:
+
+When using HMAC, the message is hashed in 2 stages using a secret key and fixed padding values for each layer. By extending the message, the inside layer gets changed before being hashed for the final MAC output, causing the final MAC to no longer match what is expected and therefore the verification fails.
 
 
 
