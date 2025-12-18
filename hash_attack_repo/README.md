@@ -107,6 +107,7 @@ int main(int argc, const char *argv[]) {
 
 URL contructed
     ```http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
+
 run in terminal
 ```bash
     curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
@@ -123,5 +124,6 @@ expected result
 1.  Open `lab.py` (the server code).
 2.  Replace the insecure SHA-256 concatenation with `hmac.new`.
 3.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works.
+
 
 
