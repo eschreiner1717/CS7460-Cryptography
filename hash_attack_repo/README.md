@@ -52,7 +52,7 @@ echo -n "123456:myname=EvanSchreiner&uid=1001&lstcmd=1" | sha256sum
 
 **Send Valid Request:** Construct the URL with the calculated MAC to confirm the server accepts it:
 ```bash
-curl "[http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1](http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1)"
+curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1"
 ```
 
 ### 3. The Calculated Padding (Task 2)
@@ -244,6 +244,7 @@ curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%
 **_Why will a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC?_**
 
 When using HMAC, the message is hashed in 2 stages using a secret key and fixed padding values for each layer. By extending the message, the inside layer gets changed before being hashed for the final MAC output, causing the final MAC to no longer match what is expected and therefore the verification fails.
+
 
 
 
