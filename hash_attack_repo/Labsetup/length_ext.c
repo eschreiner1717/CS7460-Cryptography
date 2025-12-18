@@ -13,7 +13,6 @@ int main(int argc, const char *argv[]) {
 	for(i=0; i<64; i++)
         	SHA256_Update(&c, "*", 1);
 
-	// TODO: Paste the Original MAC hash from Task 1 below.
 	// Break the hash into 8 chunks of 8 hex characters.
 	c.h[0] = htole32(0x53f5e9d8);
         c.h[1] = htole32(0x9774bf0f);
@@ -23,11 +22,6 @@ int main(int argc, const char *argv[]) {
         c.h[5] = htole32(0xfd17a3cd);
         c.h[6] = htole32(0xe64c64c9);
         c.h[7] = htole32(0x89a9faa1);
-
-	// Total length of the forged message = (Key + Message + Padding).
-	// 64 bytes (original block) + 13 bytes ("&download=secret.txt") * 8 bits/byte
-	// c.Nl = (64 + 20) * 8;
-    	// c.Nh = 0;
 
     	// Append the extra message
     	SHA256_Update(&c, "&download=secret.txt", 20);
