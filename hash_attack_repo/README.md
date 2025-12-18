@@ -125,7 +125,7 @@ The current SHA-256 concatenation occurs in `lab.py`. From the orignal lab insta
 
 Though, in our Git repo, we have it simply at `/hash_attack_repo/lab.py`
 
-New `verfy_mac` function (changes being removed commented out, and the new addition following it):
+New `verify_mac` function (changes being removed commented out, and the new addition following it):
 
 ```python
 def verify_mac(key, my_name, uid, cmd, download, mac):
@@ -134,18 +134,21 @@ def verify_mac(key, my_name, uid, cmd, download, mac):
     if my_name:
         message = 'myname={}&'.format(my_name)
     message += 'uid={}&lstcmd='.format(uid) + cmd + download_message
-    #payload = key + ':' + message
-    #app.logger.debug('payload is [{}]'.format(payload))
-    #real_mac = hashlib.sha256(payload.encode('utf-8', 'surrogateescape')).hexdigest()
 
+    # REMOVED:
+    # payload = key + ':' + message
+    # app.logger.debug('payload is [{}]'.format(payload))
+    # real_mac = hashlib.sha256(payload.encode('utf-8', 'surrogateescape')).hexdigest()
+
+    # ADDED:
     app.logger.debug('message is [{}]'.format(message))
-
     real_mac = hmac.new(
         bytearray(key.encode('utf-8')),
         msg=message.encode('utf-8', 'surrogateescape'),
         digestmod=hashlib.sha256
     ).hexdigest()
 
+    # UNCHANGED:
     app.logger.debug('real mac is [{}]'.format(real_mac))
     if mac == real_mac:
         return True
@@ -214,6 +217,7 @@ curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%
 **_Why will a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC?_**
 
 When using HMAC, the message is hashed in 2 stages using a secret key and fixed padding values for each layer. By extending the message, the inside layer gets changed before being hashed for the final MAC output, causing the final MAC to no longer match what is expected and therefore the verification fails.
+
 
 
 
