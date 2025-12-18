@@ -102,35 +102,32 @@ int main(int argc, const char *argv[]) {
     Result from running:
     ```4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
     
-6.  Construct the Attack URL:
+5.  Construct the Attack URL:
     `http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1` + `[Padding URL Encoded]` + `&download=secret.txt` + `&mac=[New_Forged_MAC]`
 
-URL contructed
+URL contructed:
     ```http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
 
-run in terminal
+**To perform the attack:**
 ```bash
 curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
 ```
 
-expected result
+**Expected result:**
 <img width="688" height="420" alt="image" src="https://github.com/user-attachments/assets/d9c84e1a-c3e6-4623-b92b-ff1c2b800d05" />
 
 
-
-
-
 ## Task 4 (Remediation)
-1.  Open `lab.py` (the server code).
-Go in the lab directory and edit the lab.py file from there
-For my file location on arm mac:
-```bash
-cd ~/Downloads/finalLab/Labsetup-arm/image_flask/app/www
-```
-   
-2.  Replace the insecure SHA-256 concatenation with `hmac.new`.
-Replace verfy_mac function with this, with the changes being removed commented out, and the new addition following it.
-```
+
+1. Replace the insecure SHA-256 concatenation with `hmac.new`.
+
+The current SHA-256 concatenation occurs in `lab.py`. From the orignal lab instalation, that is found for MacOS at `~/Downloads/finalLab/Labsetup-arm/image_flask/app/www/`, and for Windows at `~/Labsetup/Labsetup/image_flask/app/www/`. 
+
+Though, in our Git repo, we have it simply at `/hash_attack_repo/lab.py`
+
+New `verfy_mac` function (changes being removed commented out, and the new addition following it):
+
+```python
 def verify_mac(key, my_name, uid, cmd, download, mac):
     download_message = '' if not download else '&download=' + download
     message = ''
@@ -155,24 +152,27 @@ def verify_mac(key, my_name, uid, cmd, download, mac):
     return False
 ```
 
-3.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works. If docker is running, do `dcdown` first to shut down the running server.
+2.  Rebuild the docker container (`dcbuild && dcup`) and verify the attack above no longer works. If docker is running, do `dcdown` first to shut down the running server.
 
 URL contructed in Part 3
     ```http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1```
 
-run in terminal
+**Perform Attack:**
 ```bash
 curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=4e298ec304997adebe2f3f037a72a6efc6398514e8215fafd9d6a1ed455cebd1"
 ```
 
-expected result
+**Expected Result**
 <img width="957" height="469" alt="image" src="https://github.com/user-attachments/assets/cfefafab-f349-4b7a-9b76-234523cf08a9" />
 
-4.  Repeat Task 1 to send a request to list files while using HMAC
+3.  Repeat Task 1 to send a request to list files while using HMAC
 for the MAC calculation.
 
-Python function to compute HMAC
-```
+To do this, we created a new file called `hmac_mac.py` That looks like the following...
+
+This computes HMAC!
+
+```python
 #!/bin/env python3
 import hmac
 import hashlib
@@ -188,41 +188,33 @@ real_mac = hmac.new(bytearray(key.encode('utf-8')),
     digestmod=hashlib.sha256).hexdigest()
 ```
 
-create the file in the hash_attack_repo foler with `name hmac_mac.py`, then paste in python code above
-```bash
-nano hmac_mac.py
-```
-
-run python file
-```bash
-python 3 hmac_mac.py
-```
-
-result
+**Expected Result of `hmac_mac.py`**
 ```
 694f119a8f200dfbe7a4f14750803081ee6a79f1d9be2a8e59f11a588cc98f25
 ```
+
+
 Run Task 1 request to list files again with HMAC
 ```bash
 curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=694f119a8f200dfbe7a4f14750803081ee6a79f1d9be2a8e59f11a588cc98f25"
 ```
 
-expected result
+**Expected Result**
 <img width="951" height="670" alt="image" src="https://github.com/user-attachments/assets/2d8d61df-5f2e-4c2f-ba91-f99dcdbbd08a" />
 
 
-
-Run attack with new HMAC in URL
+**Run attack with new HMAC in URL:**
 ```bash
 curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68&download=secret.txt&mac=694f119a8f200dfbe7a4f14750803081ee6a79f1d9be2a8e59f11a588cc98f25"
 ```
 
-expected result
+**Expected result**
 <img width="941" height="470" alt="image" src="https://github.com/user-attachments/assets/0c4a39eb-9deb-4665-b4f5-f14d7d89fa16" />
 
-Explaination of why a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC:
+**_Why will a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC?_**
 
 When using HMAC, the message is hashed in 2 stages using a secret key and fixed padding values for each layer. By extending the message, the inside layer gets changed before being hashed for the final MAC output, causing the final MAC to no longer match what is expected and therefore the verification fails.
+
 
 
 
