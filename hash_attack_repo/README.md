@@ -10,6 +10,26 @@ This repo contains our work for the SEED Labs Hash Length Extension Attack.
 - **Will:** Tasks 3 & 4 (Attack Execution, HMAC Remediation)
 
 
+## Initialization and Setup
+
+Before running the attack, we must set up the environment and ensure the host VM maps the server correctly.
+
+1. **Map the Hostname:**
+   Add the following entry to your `/etc/hosts` file to map the server URL to the container IP:
+   ```bash
+   10.9.0.80   [www.seedlab-hashlen.com](https://www.seedlab-hashlen.com)
+   ```
+
+2. **Start the Containers:**
+   Navigate to the Labsetup directory and build the environment:
+   ```bash
+   cd hash_attack_repo/Labsetup
+   dcbuild
+   dcup
+   ```
+   _Use `dcdown` if containers were previously running._
+   
+
 ## Task 1 & 2
 
 ### 1. Target Information
@@ -19,14 +39,23 @@ We are attacking the server at `www.seedlab-hashlen.com` (10.9.0.80).
 * **UID:** `1001`
 * **Key:** `123456` (Found in `key.txt`)
 
-### 2. The Baseline Request
+### 2. The Baseline Request (Task 1)
 
-This is the valid request we generated. We will extend this message.
+This is the valid request we generated. We verify the MAC generation using the command line to ensure we can generate a valid request.
 * **Original Command String (R):** `myname=EvanSchreiner&uid=1001&lstcmd=1`
 * **Original MAC Hash:** `53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1`
-    * *Note: You must use this hash to initialize the registers in `length_ext.c`.*
 
-### 3. The Calculated Padding
+**Verification Command:** Run the following to prove the hash is correct:
+```bash
+echo -n "123456:myname=EvanSchreiner&uid=1001&lstcmd=1" | sha256sum
+```
+
+**Send Valid Request:** Construct the URL with the calculated MAC to confirm the server accepts it:
+```bash
+curl "[http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1](http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1&mac=53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1)"
+```
+
+### 3. The Calculated Padding (Task 2)
 I calculated the SHA-256 padding for the 64-byte block.
 * **Padding Hex:** `80000000000000000000000000000000000168`
 * **Padding URL Encoded:** `%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%01%68`
@@ -121,9 +150,7 @@ curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%
 
 1. Replace the insecure SHA-256 concatenation with `hmac.new`.
 
-The current SHA-256 concatenation occurs in `lab.py`. From the orignal lab instalation, that is found for MacOS at `~/Downloads/finalLab/Labsetup-arm/image_flask/app/www/`, and for Windows at `~/Labsetup/Labsetup/image_flask/app/www/`. 
-
-Though, in our Git repo, we have it simply at `/hash_attack_repo/lab.py`
+The current SHA-256 concatenation occurs in `lab.py`. We modified the file located at `Labsetup/image_flask/app/www/lab.py`.
 
 New `verify_mac` function (changes being removed commented out, and the new addition following it):
 
@@ -217,6 +244,7 @@ curl "http://www.seedlab-hashlen.com/?myname=EvanSchreiner&uid=1001&lstcmd=1%80%
 **_Why will a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC?_**
 
 When using HMAC, the message is hashed in 2 stages using a secret key and fixed padding values for each layer. By extending the message, the inside layer gets changed before being hashed for the final MAC output, causing the final MAC to no longer match what is expected and therefore the verification fails.
+
 
 
 
