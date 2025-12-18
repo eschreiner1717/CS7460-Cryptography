@@ -24,7 +24,7 @@ We are attacking the server at `www.seedlab-hashlen.com` (10.9.0.80).
 This is the valid request we generated. We will extend this message.
 * **Original Command String (R):** `myname=EvanSchreiner&uid=1001&lstcmd=1`
 * **Original MAC Hash:** `53f5e9d89774bf0f1050fb4cadc83ca04465e56afd17a3cde64c64c989a9faa1`
-    * *Note to Will: You must use this hash to initialize the registers in `length_ext.c`.*
+    * *Note: You must use this hash to initialize the registers in `length_ext.c`.*
 
 ### 3. The Calculated Padding
 I calculated the SHA-256 padding for the 64-byte block.
@@ -33,7 +33,7 @@ I calculated the SHA-256 padding for the 64-byte block.
 * **Length Field (Hex):** `0x168` (360 bits)
 
 
-## Task 3 (*Will*)
+## Task 3
 **Objective:** Forge a signature for `&download=secret.txt` without knowing the key.
 
 1.  Open `length_ext.c`.
@@ -43,9 +43,9 @@ I calculated the SHA-256 padding for the 64-byte block.
 3.  Update the length field in the code to `64 + len("Extra message")`.
     * *Note: The C code needs the total length of the forged message to finalize the hash correctly.*
 
-length_ext.c after 2 and 3
-Change C file, adding hash into registers, and comment out length field
-```
+`length_ext.c` now looks like the following after steps 2 and 3:
+
+```c
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <openssl/sha.h>
@@ -223,6 +223,7 @@ expected result
 Explaination of why a malicious request using length extension and extra commands will fail MAC verification when the client and server use HMAC:
 
 When using HMAC, the message is hashed in 2 stages using a secret key and fixed padding values for each layer. By extending the message, the inside layer gets changed before being hashed for the final MAC output, causing the final MAC to no longer match what is expected and therefore the verification fails.
+
 
 
 
